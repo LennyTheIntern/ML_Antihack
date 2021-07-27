@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31515.178
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MouseDataCollector", "MouseDataCollector\MouseDataCollector.vcxproj", "{35D5D95F-CB40-4E88-9AA3-29D24375BBFB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{35D5D95F-CB40-4E88-9AA3-29D24375BBFB}.Debug|x64.ActiveCfg = Debug|x64
+		{35D5D95F-CB40-4E88-9AA3-29D24375BBFB}.Debug|x64.Build.0 = Debug|x64
+		{35D5D95F-CB40-4E88-9AA3-29D24375BBFB}.Debug|x86.ActiveCfg = Debug|Win32
+		{35D5D95F-CB40-4E88-9AA3-29D24375BBFB}.Debug|x86.Build.0 = Debug|Win32
+		{35D5D95F-CB40-4E88-9AA3-29D24375BBFB}.Release|x64.ActiveCfg = Release|x64
+		{35D5D95F-CB40-4E88-9AA3-29D24375BBFB}.Release|x64.Build.0 = Release|x64
+		{35D5D95F-CB40-4E88-9AA3-29D24375BBFB}.Release|x86.ActiveCfg = Release|Win32
+		{35D5D95F-CB40-4E88-9AA3-29D24375BBFB}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3ACFBC7A-D6B5-47C3-A2B9-4BB572C34D36}
+	EndGlobalSection
+EndGlobal
