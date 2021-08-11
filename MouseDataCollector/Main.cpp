@@ -1,6 +1,11 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <Windows.h>
+#include <time.h>
+#include <string>
+#include <array>
+
 
 /*
 // monitors the raw input from the mouse
@@ -10,10 +15,16 @@
 // after a certain amount of time or just when specipified run all the colected mouse move to a tensorflow or pytorch
 // if there are enough 
 */
+
+const int NUMFEATURES = 4;
+std::vector<std::string> mousefeaturlables = {"time","dx","dy","xrawline","yrawline","clickID"};
+std::ofstream file;
+
 LRESULT CALLBACK targetWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 int main()
 {
+    auto xx = mousefeaturlables.back();
     HINSTANCE hInstance = GetModuleHandle(NULL);
 
     WNDCLASS wc = {};
@@ -44,40 +55,92 @@ int main()
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
-
+    file.close();
     DestroyWindow(targetWindow);
 
     return 0;
 }
 
+
+// might be benificial to colect all of the mouse movement up to a half send before the gun was fired.
+// rawmousedatastruct
+// rawmouse event
 LRESULT CALLBACK targetWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+
+    // make a struct for this
+    static std::vector<POINT> rawmousebuffor;
+    static std::vector<long> rawmousetime;
+    static int clickID = 0;
+    static const int MAXRAWMOUSEBUFFERSIZE = 500;
+    static long startclk = std::clock();
+    
     switch (uMsg)
     {
         // print out the values that I need
-    case WM_INPUT: {
-        UINT dataSize = { 0 };
-        GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, NULL, &dataSize, sizeof(RAWINPUTHEADER)); //Need to populate data size first
-        if (dataSize > 0)
-        {
-            std::vector<BYTE> rawdata(dataSize);
-
-            if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, rawdata.data(), &dataSize, sizeof(RAWINPUTHEADER)) == dataSize)
+        case WM_INPUT: {
+            UINT dataSize = { 0 };
+            GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, NULL, &dataSize, sizeof(RAWINPUTHEADER)); //Need to populate data size first
+            if (dataSize > 0)
             {
-                RAWINPUT* raw = reinterpret_cast<RAWINPUT*>(rawdata.data());
-                if (raw->header.dwType == RIM_TYPEMOUSE)
-                {
+                std::vector<BYTE> rawdata(dataSize); // should probaly just use a smart pointer
 
-                    std::cout << "RAWDATA ->";
-                    std::cout <<" X: " << raw->data.mouse.lLastX;
-                    std::cout <<" Y: " << raw->data.mouse.lLastY;
-                    std::cout <<" mousebutton Flags: " << raw->data.mouse.usButtonFlags << std::endl;
+                if (GetRawInputData(reinterpret_cast<HRAWINPUT>(lParam), RID_INPUT, rawdata.data(), &dataSize, sizeof(RAWINPUTHEADER)) == dataSize)
+                {
+                    RAWINPUT* raw = reinterpret_cast<RAWINPUT*>(rawdata.data());
+                    if (raw->header.dwType == RIM_TYPEMOUSE)
+                    {
+                        std::cout << raw->data.mouse.ulExtraInformation << '\n';
+                        std::cout << clock()<<'\n';
+
+
+                        POINT temp;
+                        temp.x = raw->data.mouse.lLastX;
+                        temp.y = raw->data.mouse.lLastY;
+                        rawmousebuffor.push_back(temp);
+                        rawmousetime.push_back(std::clock());
+
+                        if (raw->data.mouse.usButtonFlags == RI_MOUSE_BUTTON_1_DOWN)
+                        {
+                            if (!file.is_open())
+                            {
+                                file.open("MouseData.csv");
+                                for (std::string element : mousefeaturlables)
+                                {
+                                    file << element;
+                                    if (element != mousefeaturlables.back())
+                                    {                 
+                                       file << ',';
+                                    }
+                                    else
+                                    {
+                                        file << '\n';                                    
+                                    }
+                                }
+                            }
+
+                            int xrawmouseacc = 0;
+                            int yrawmouseacc = 0;
+                            int acc = 0;
+                            //i would cum i I could make an enum
+                            for (POINT i : rawmousebuffor)
+                            {
+                                xrawmouseacc += i.x;
+                                yrawmouseacc += i.y;
+                                file << rawmousetime[acc] << ',' << i.x << ',' << i.y << ',' << xrawmouseacc << ',' << yrawmouseacc << ',' << clickID << '\n';
+                                acc++;
+                            }
+                            clickID++;
+                        }
+                    }
+                    if (rawmousebuffor.size() > MAXRAWMOUSEBUFFERSIZE)
+                    {
+                        rawmousebuffor.erase(rawmousebuffor.begin());
+                    }
                 }
             }
+            return DefWindowProc(hWnd, uMsg, wParam, lParam);
         }
-        return 0;
+        
     }
-    }
-
-    return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
