@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <math.h>
 #include <vector>
 #include <Windows.h>
 #include <time.h>
@@ -125,8 +126,9 @@ LRESULT CALLBACK targetWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lP
                             //i would cum i I could make an enum
                             for (POINT i : rawmousebuffor)
                             {
-                                xrawmouseacc += i.x;
-                                yrawmouseacc += i.y;
+                                
+                                xrawmouseacc += std::abs(i.x);
+                                yrawmouseacc += std::abs(i.y);
                                 file << rawmousetime[acc] << ',' << i.x << ',' << i.y << ',' << xrawmouseacc << ',' << yrawmouseacc << ',' << clickID << '\n';
                                 acc++;
                             }
